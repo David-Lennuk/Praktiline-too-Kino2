@@ -47,6 +47,9 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject />
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Aspose.PDF, Version=24.12.0.0, Culture=neutral, PublicKeyToken=716fcc553a201e56, processorArchitecture=MSIL">
       <HintPath>packages\Aspose.PDF.24.12.0\lib\netstandard2.0\Aspose.PDF.dll</HintPath>
@@ -136,6 +139,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AppContext.cs" />
     <Compile Include="Kasutajate_tabelForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -267,6 +271,11 @@
     <Content Include="Kino_log.ldf">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="Poster\faster.jpg" />
+    <Content Include="Poster\Gosling.jpg" />
+    <Content Include="Poster\sipsik.jpg" />
+    <Content Include="Poster\taxi.jpg" />
+    <Content Include="Poster\term.jpg" />
     <Content Include="Registr.jpg" />
     <Content Include="woll.jpg" />
   </ItemGroup>

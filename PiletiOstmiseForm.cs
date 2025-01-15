@@ -48,10 +48,10 @@ namespace Praktiline_too_Kino
             Load += (s, e) =>
             {
                 // Создаем один зал с фиксированными размерами
-                kinosaal = new KinoSaal(10, 10);
+                kinosaal = new KinoSaal(5, 5);
 
-                this.Width = 900;
-                this.Height = 900;
+                this.Width = 450;
+                this.Height = 475;
                 BackColor = Color.Bisque;
 
                 // Отображаем зал
@@ -60,7 +60,7 @@ namespace Praktiline_too_Kino
                 // Создаем кнопку покупки билета
                 osta_pilet = new Button();
                 osta_pilet.Size = new Size(150, 50);
-                osta_pilet.Location = new Point(600, 700);
+                osta_pilet.Location = new Point(125, 375);
                 osta_pilet.Text = "Osta pilet";
                 osta_pilet.Font = new Font("Arial", 12, FontStyle.Bold);
                 osta_pilet.BackColor = Color.Blue;
@@ -87,8 +87,8 @@ namespace Praktiline_too_Kino
         // Метод для отображения одного зала на форме
         private void SaaliKuvamine()
         {
-            int Y = 10;
-            int X = 10;
+            int Y = 5;
+            int X = 5;
 
             // Создаем кнопки для мест в зале
             for (int i = 0; i < kinosaal.RidadeArv; i++)

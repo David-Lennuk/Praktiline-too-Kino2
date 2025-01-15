@@ -23,8 +23,6 @@ namespace Praktiline_too_Kino
         string postersDirectory = Path.Combine(Application.StartupPath, "../../Poster");
         private List<string> valitudKohad;
 
-        SqlConnection conn = new SqlConnection($@"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=C:\Users\opilane\source\repos\KinoAB\KinoAB\Kino.mdf;Integrated Security=True");
-
        
         SqlCommand cmd;
         SqlDataReader reader;
@@ -88,8 +86,8 @@ namespace Praktiline_too_Kino
                 try
                 {
                     // Открываем соединение с базой данных
-                    conn.Open();
-                    cmd = new SqlCommand("SELECT Id, Poster, Filmi_nimetus FROM Kinolaud", conn);
+                    AppContext.conn.Open();
+                    cmd = new SqlCommand("SELECT Id, Poster, Filmi_nimetus FROM Kinolaud", AppContext.conn);
                     reader = cmd.ExecuteReader();
 
                     while (reader.Read())
@@ -111,7 +109,7 @@ namespace Praktiline_too_Kino
                     }
 
                     reader.Close();
-                    conn.Close();
+                    AppContext.conn.Close();
 
                     // Если изображения загружены, показываем первое
                     if (posters.Count > 0)
@@ -128,9 +126,9 @@ namespace Praktiline_too_Kino
                 catch (Exception ex)
                 {
                     MessageBox.Show("Viga piltide üleslaadimisel: " + ex.Message);
-                    if (conn.State == System.Data.ConnectionState.Open)
+                    if (AppContext.conn.State == System.Data.ConnectionState.Open)
                     {
-                        conn.Close();
+                        AppContext.conn.Close();
                     }
                 }
             }
@@ -153,15 +151,16 @@ namespace Praktiline_too_Kino
 
                 pictureBox.Image = posters[praegune_indeks];
                 filmi_nimetus_lbl.Text = filmiNimetuss[praegune_indeks];
+                
                 filmiNimetus = filmi_nimetus_lbl.Text;
-                posterPath = Path.Combine(postersDirectory, $"{filmiNimetus}.jpg");
+                posterPath = Path.Combine(postersDirectory, $"{filmiNimetus}.jpg".Trim().Replace("\n", "").Replace("\r", ""));
 
 
                 try
                 {
-                    conn.Open();
+                    AppContext.conn.Open();
                     // Запрос для получения ID фильма по названию
-                    cmd = new SqlCommand("SELECT Id FROM Kinolaud WHERE Filmi_nimetus = @filmiNimetus", conn);
+                    cmd = new SqlCommand("SELECT Id FROM Kinolaud WHERE Filmi_nimetus = @filmiNimetus", AppContext.conn);
                     cmd.Parameters.AddWithValue("@filmiNimetus", filmiNimetus);
                     filmiId = cmd.ExecuteScalar()?.ToString();
 
@@ -173,7 +172,7 @@ namespace Praktiline_too_Kino
                     }
 
                     // Запрос для получения данных сеанса
-                    cmd = new SqlCommand("SELECT * FROM seansid WHERE Kinolaud_id = @filmiId", conn);
+                    cmd = new SqlCommand("SELECT * FROM seansid WHERE Kinolaud_id = @filmiId", AppContext.conn);
                     cmd.Parameters.AddWithValue("@filmiId", filmiId);
                     reader = cmd.ExecuteReader();
 
@@ -206,7 +205,7 @@ namespace Praktiline_too_Kino
                 }
                 finally
                 {
-                    conn.Close();
+                    AppContext.conn.Close();
                 }
 
 

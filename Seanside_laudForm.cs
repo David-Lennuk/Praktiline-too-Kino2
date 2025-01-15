@@ -14,11 +14,7 @@ namespace Praktiline_too_Kino
 {
     public partial class Seanside_laudForm : Form
     {
-        //SqlConnection conn = new SqlConnection($@"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=C:\Users\opilane\source\repos\KinoAB\KinoAB\Kino.mdf;Integrated Security=True");
-
-        static string projectRoot = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"..\..\"));
-        static string db_path = Path.Combine(projectRoot, "Kino.mdf");
-        SqlConnection conn = new SqlConnection($@"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename={db_path};Integrated Security=True");
+        //SqlConnection AppContext.conn = new SqlConnection($@"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=C:\Users\opilane\source\repos\KinoAB\KinoAB\Kino.mdf;Integrated Security=True");
 
         SqlCommand cmd;
         SqlDataAdapter adapter;
@@ -152,19 +148,20 @@ namespace Praktiline_too_Kino
 
         public void NaitaSeansid()
         {
-            conn.Open();
+            
+            AppContext.conn.Open();
             DataTable dt = new DataTable();
-            cmd = new SqlCommand("SELECT Seansid.Id, Kinolaud.Filmi_nimetus, Saal.Id, Seansid.Start_time, Seansid.Lopp_aeg FROM Seansid INNER JOIN Kinolaud ON Seansid.Kinolaud_Id = Kinolaud.Id INNER JOIN Saal ON Seansid.Saal_id = Saal.Id", conn);
+            cmd = new SqlCommand("SELECT Seansid.Id, Kinolaud.Filmi_nimetus, Saal.Id, Seansid.Start_time, Seansid.Lopp_aeg FROM Seansid INNER JOIN Kinolaud ON Seansid.Kinolaud_Id = Kinolaud.Id INNER JOIN Saal ON Seansid.Saal_id = Saal.Id", AppContext.conn);
             adapter = new SqlDataAdapter(cmd);
             adapter.Fill(dt);
             dataGridView.DataSource = dt;
-            conn.Close();
+            AppContext.conn.Close();
         }
 
         public void NaitaKinolaud()
         {
-            conn.Open();
-            cmd = new SqlCommand("SELECT Id, Filmi_nimetus FROM Kinolaud", conn);
+            AppContext.conn.Open();
+            cmd = new SqlCommand("SELECT Id, Filmi_nimetus FROM Kinolaud", AppContext.conn);
             adapter = new SqlDataAdapter(cmd);
             kinolaudTable = new DataTable();
             adapter.Fill(kinolaudTable);
@@ -172,13 +169,13 @@ namespace Praktiline_too_Kino
             {
                 kinolaud_cb.Items.Add(item["Filmi_nimetus"]);
             }
-            conn.Close();
+            AppContext.conn.Close();
         }
 
         public void NaitaSaal()
         {
-            conn.Open();
-            cmd = new SqlCommand("SELECT Id, Saal_nimetus FROM Saal", conn);
+            AppContext.conn.Open();
+            cmd = new SqlCommand("SELECT Id, Saal_nimetus FROM Saal", AppContext.conn);
             adapter = new SqlDataAdapter(cmd);
             saalTable = new DataTable();
             adapter.Fill(saalTable);
@@ -186,7 +183,7 @@ namespace Praktiline_too_Kino
             {
                 saal_cb.Items.Add(item["Saal_nimetus"]);
             }
-            conn.Close();
+            AppContext.conn.Close();
         }
 
         private void Lisa_btn_Click(object sender, EventArgs e)
@@ -195,26 +192,26 @@ namespace Praktiline_too_Kino
             {
                 try
                 {
-                    conn.Open();
+                    AppContext.conn.Open();
 
                     // Get the Kinolaud Id
-                    cmd = new SqlCommand("SELECT Id FROM Kinolaud WHERE Filmi_nimetus=@filmi", conn);
+                    cmd = new SqlCommand("SELECT Id FROM Kinolaud WHERE Filmi_nimetus=@filmi", AppContext.conn);
                     cmd.Parameters.AddWithValue("@filmi", kinolaud_cb.Text);
                     int kinolaudId = Convert.ToInt32(cmd.ExecuteScalar());
 
                     // Get the Saal Id
-                    cmd = new SqlCommand("SELECT Id FROM Saal WHERE Saal_nimetus=@saal", conn);
+                    cmd = new SqlCommand("SELECT Id FROM Saal WHERE Saal_nimetus=@saal", AppContext.conn);
                     cmd.Parameters.AddWithValue("@saal", saal_cb.Text);
                     int saalId = Convert.ToInt32(cmd.ExecuteScalar());
 
                     // Insert into Seansid table
-                    cmd = new SqlCommand("INSERT INTO Seansid (Kinolaud_Id, Saal_Id, Start_time, Lopp_aeg) VALUES (@filmi, @saal, @start_time, @lopp_aeg)", conn);
+                    cmd = new SqlCommand("INSERT INTO Seansid (Kinolaud_Id, Saal_Id, Start_time, Lopp_aeg) VALUES (@filmi, @saal, @start_time, @lopp_aeg)", AppContext.conn);
                     cmd.Parameters.AddWithValue("@filmi", kinolaudId);  // Use the correct Kinolaud Id
                     cmd.Parameters.AddWithValue("@saal", saalId);  // Use the correct Saal Id
                     cmd.Parameters.AddWithValue("@start_time", start_time_dtp.Value);
                     cmd.Parameters.AddWithValue("@lopp_aeg", lopp_time_dtp.Value);
                     cmd.ExecuteNonQuery();
-                    conn.Close();
+                    AppContext.conn.Close();
 
                     NaitaSeansid();
                     MessageBox.Show("Seanss lisatud edukalt!", "Lisamine");
@@ -235,27 +232,27 @@ namespace Praktiline_too_Kino
         {
             try
             {
-                conn.Open();
+                AppContext.conn.Open();
 
                 // Fetch the Kinolaud Id using the selected Film title
-                cmd = new SqlCommand("SELECT Id FROM Kinolaud WHERE Filmi_nimetus=@filmi", conn);
+                cmd = new SqlCommand("SELECT Id FROM Kinolaud WHERE Filmi_nimetus=@filmi", AppContext.conn);
                 cmd.Parameters.AddWithValue("@filmi", kinolaud_cb.SelectedItem);
                 int kinolaudId = Convert.ToInt32(cmd.ExecuteScalar());
 
                 // Fetch the Saal Id using the selected Hall name
-                cmd = new SqlCommand("SELECT Id FROM Saal WHERE Saal_nimetus=@saal", conn);
+                cmd = new SqlCommand("SELECT Id FROM Saal WHERE Saal_nimetus=@saal", AppContext.conn);
                 cmd.Parameters.AddWithValue("@saal", saal_cb.SelectedItem);
                 int saalId = Convert.ToInt32(cmd.ExecuteScalar());
 
                 // Update the Seansid table with the new values
-                cmd = new SqlCommand("UPDATE Seansid SET Kinolaud_Id = @filmi, Saal_Id = @saal, Start_time = @start_time, Lopp_aeg = @lopp_aeg WHERE Id = @id", conn);
+                cmd = new SqlCommand("UPDATE Seansid SET Kinolaud_Id = @filmi, Saal_Id = @saal, Start_time = @start_time, Lopp_aeg = @lopp_aeg WHERE Id = @id", AppContext.conn);
                 cmd.Parameters.AddWithValue("@id", ID);
                 cmd.Parameters.AddWithValue("@filmi", kinolaudId);  // Use the fetched Kinolaud Id
                 cmd.Parameters.AddWithValue("@saal", saalId);  // Use the fetched Saal Id
                 cmd.Parameters.AddWithValue("@start_time", start_time_dtp.Value);
                 cmd.Parameters.AddWithValue("@lopp_aeg", lopp_time_dtp.Value);
                 cmd.ExecuteNonQuery();
-                conn.Close();
+                AppContext.conn.Close();
 
                 NaitaSeansid();
                 MessageBox.Show("Seanss edukalt uuendatud", "Uuendamine");
@@ -276,12 +273,12 @@ namespace Praktiline_too_Kino
 
                     if (ID != 0)
                     {
-                        conn.Open();
-                        cmd = new SqlCommand("DELETE FROM Seansid WHERE Id = @id", conn);
+                        AppContext.conn.Open();
+                        cmd = new SqlCommand("DELETE FROM Seansid WHERE Id = @id", AppContext.conn);
                         cmd.Parameters.AddWithValue("@id", ID);
 
                         cmd.ExecuteNonQuery();
-                        conn.Close();
+                        AppContext.conn.Close();
                         NaitaSeansid();
                         MessageBox.Show("Seanss edukalt kustutatud", "Kustutamine");
                     }

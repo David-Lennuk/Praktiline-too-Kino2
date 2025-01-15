@@ -14,11 +14,7 @@ namespace Praktiline_too_Kino
 {
     public partial class KohadForm : Form
     {
-        //SqlConnection conn = new SqlConnection($@"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=C:\Users\opilane\source\repos\KinoAB\KinoAB\Kino.mdf;Integrated Security=True");
-
-        static string projectRoot = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"..\..\"));
-        static string db_path = Path.Combine(projectRoot, "Kino.mdf");
-        SqlConnection conn = new SqlConnection($@"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename={db_path};Integrated Security=True");
+        //SqlConnection AppContext.conn = new SqlConnection($@"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=C:\Users\opilane\source\repos\KinoAB\KinoAB\Kino.mdf;Integrated Security=True");
 
         SqlCommand cmd;
         SqlDataAdapter adapter;
@@ -130,8 +126,8 @@ namespace Praktiline_too_Kino
 
         private void NaitaSeansid()
         {
-            conn.Open();
-            SqlCommand cmd = new SqlCommand("SELECT Id, Start_time FROM Seansid", conn);
+            AppContext.conn.Open();
+            SqlCommand cmd = new SqlCommand("SELECT Id, Start_time FROM Seansid", AppContext.conn);
             SqlDataAdapter adapter = new SqlDataAdapter(cmd);
             seansidTable = new DataTable();
             adapter.Fill(seansidTable);
@@ -141,18 +137,18 @@ namespace Praktiline_too_Kino
             {
                 seansid_cb.Items.Add(row["Start_time"].ToString());
             }
-            conn.Close();
+            AppContext.conn.Close();
         }
 
         private void NaitaKohad()
         {
-            conn.Open();
+            AppContext.conn.Open();
             DataTable dt = new DataTable();
-            cmd = new SqlCommand("SELECT * FROM Kohad", conn);
+            cmd = new SqlCommand("SELECT * FROM Kohad", AppContext.conn);
             adapter = new SqlDataAdapter(cmd);
             adapter.Fill(dt);
             dataGridView.DataSource = dt;
-            conn.Close();
+            AppContext.conn.Close();
         }
 
         private void Lisa_btn_Click(object sender, EventArgs e)
@@ -160,19 +156,19 @@ namespace Praktiline_too_Kino
             if (!string.IsNullOrEmpty(broneeringu_txt.Text) &&
                 !string.IsNullOrEmpty(rida_txt.Text) && !string.IsNullOrEmpty(koht_txt.Text))
             {
-                conn.Open();
+                AppContext.conn.Open();
 
                 DateTime startTime;
                 if (DateTime.TryParse(seansid_cb.Text, out startTime))
                 {
-                    cmd = new SqlCommand("SELECT Id FROM Seansid WHERE Start_time = @start", conn);
+                    cmd = new SqlCommand("SELECT Id FROM Seansid WHERE Start_time = @start", AppContext.conn);
                     cmd.Parameters.AddWithValue("@start", startTime);
                     object result = cmd.ExecuteScalar();
 
                     if (result != null)
                     {
                         ID = Convert.ToInt32(result);
-                        cmd = new SqlCommand("INSERT INTO Kohad (Seansid_Id, Broneeringu_staatus, Rida_number, Kohanumber) VALUES (@seansid, @broneeringu, @rida, @koht)", conn);
+                        cmd = new SqlCommand("INSERT INTO Kohad (Seansid_Id, Broneeringu_staatus, Rida_number, Kohanumber) VALUES (@seansid, @broneeringu, @rida, @koht)", AppContext.conn);
                         cmd.Parameters.AddWithValue("@seansid", ID);
                         cmd.Parameters.AddWithValue("@broneeringu", broneeringu_txt.Text);
                         cmd.Parameters.AddWithValue("@rida", rida_txt.Text);
@@ -189,7 +185,7 @@ namespace Praktiline_too_Kino
                     MessageBox.Show("Valige õige kuupäev.");
                 }
 
-                conn.Close();
+                AppContext.conn.Close();
                 NaitaKohad();
             }
         }
@@ -199,12 +195,12 @@ namespace Praktiline_too_Kino
         {
             if (ID != 0)
             {
-                conn.Open();
+                AppContext.conn.Open();
 
                 DateTime startTime;
                 if (DateTime.TryParse(seansid_cb.Text, out startTime))
                 {
-                    cmd = new SqlCommand("SELECT Id FROM Seansid WHERE Start_time = @start", conn);
+                    cmd = new SqlCommand("SELECT Id FROM Seansid WHERE Start_time = @start", AppContext.conn);
                     cmd.Parameters.AddWithValue("@start", startTime);
                     object result = cmd.ExecuteScalar();
 
@@ -212,7 +208,7 @@ namespace Praktiline_too_Kino
                     {
                         int seansId = Convert.ToInt32(result);
 
-                        cmd = new SqlCommand("UPDATE Kohad SET Seansid_Id=@seansid, Broneeringu_staatus=@broneeringu, Rida_number=@rida, Kohanumber=@koht WHERE Id=@id", conn);
+                        cmd = new SqlCommand("UPDATE Kohad SET Seansid_Id=@seansid, Broneeringu_staatus=@broneeringu, Rida_number=@rida, Kohanumber=@koht WHERE Id=@id", AppContext.conn);
                         cmd.Parameters.AddWithValue("@id", ID);
                         cmd.Parameters.AddWithValue("@seansid", seansId);
                         cmd.Parameters.AddWithValue("@broneeringu", broneeringu_txt.Text);
@@ -230,7 +226,7 @@ namespace Praktiline_too_Kino
                     MessageBox.Show("Valige õige kuupäev.");
                 }
 
-                conn.Close();
+                AppContext.conn.Close();
                 NaitaKohad();
             }
         }
@@ -239,11 +235,11 @@ namespace Praktiline_too_Kino
         {
             if (ID != 0)
             {
-                conn.Open();
-                cmd = new SqlCommand("DELETE FROM Kohad WHERE Id=@id", conn);
+                AppContext.conn.Open();
+                cmd = new SqlCommand("DELETE FROM Kohad WHERE Id=@id", AppContext.conn);
                 cmd.Parameters.AddWithValue("@id", ID);
                 cmd.ExecuteNonQuery();
-                conn.Close();
+                AppContext.conn.Close();
                 NaitaKohad();
             }
             else

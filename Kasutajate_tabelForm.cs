@@ -14,11 +14,7 @@ namespace Praktiline_too_Kino
 {
     public partial class Kasutajate_tabelForm : Form
     {
-        //SqlConnection conn = new SqlConnection($@"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=C:\Users\opilane\source\repos\KinoAB\KinoAB\Kino.mdf;Integrated Security=True");
-
-        static string projectRoot = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"..\..\"));
-        static string db_path = Path.Combine(projectRoot, "Kino.mdf");
-        SqlConnection conn = new SqlConnection($@"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename={db_path};Integrated Security=True");
+        //SqlConnection AppContext.conn = new SqlConnection($@"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=C:\Users\opilane\source\repos\KinoAB\KinoAB\Kino.mdf;Integrated Security=True");
 
         SqlCommand cmd;
         SqlDataAdapter adapter;
@@ -106,13 +102,13 @@ namespace Praktiline_too_Kino
 
         public void NaitaAndmed()
         {
-            conn.Open();
+            AppContext.conn.Open();
             DataTable dt = new DataTable();
-            cmd = new SqlCommand("SELECT * FROM Kasutajad", conn);
+            cmd = new SqlCommand("SELECT * FROM Kasutajad", AppContext.conn);
             adapter = new SqlDataAdapter(cmd);
             adapter.Fill(dt);
             dataGridView.DataSource = dt;
-            conn.Close();
+            AppContext.conn.Close();
         }
 
         private void Lisa_btn_Click(object sender, EventArgs e)
@@ -121,15 +117,15 @@ namespace Praktiline_too_Kino
             {
                 try
                 {
-                    conn.Open();
+                    AppContext.conn.Open();
 
                     // Вставка нового пользователя в таблицу Kasutajad
-                    cmd = new SqlCommand("INSERT INTO Kasutajad (Nimi, Email) VALUES (@nimi, @email)", conn);
+                    cmd = new SqlCommand("INSERT INTO Kasutajad (Nimi, Email) VALUES (@nimi, @email)", AppContext.conn);
                     cmd.Parameters.AddWithValue("@nimi", nimi_txt.Text);
                     cmd.Parameters.AddWithValue("@email", email_txt.Text);
 
                     cmd.ExecuteNonQuery();
-                    conn.Close();
+                    AppContext.conn.Close();
                     Emaldamine();
                     NaitaAndmed();
 
@@ -157,16 +153,16 @@ namespace Praktiline_too_Kino
             {
                 try
                 {
-                    conn.Open();
+                    AppContext.conn.Open();
 
                     // Обновление данных в таблице Kasutajad
-                    cmd = new SqlCommand("UPDATE Kasutajad SET Nimi=@nimi, Email=@email WHERE Id=@id", conn);
+                    cmd = new SqlCommand("UPDATE Kasutajad SET Nimi=@nimi, Email=@email WHERE Id=@id", AppContext.conn);
                     cmd.Parameters.AddWithValue("@id", ID);
                     cmd.Parameters.AddWithValue("@nimi", nimi_txt.Text);
                     cmd.Parameters.AddWithValue("@email", email_txt.Text);
 
                     cmd.ExecuteNonQuery();
-                    conn.Close();
+                    AppContext.conn.Close();
                     NaitaAndmed();
                     Emaldamine();
 
@@ -190,11 +186,11 @@ namespace Praktiline_too_Kino
                 ID = Convert.ToInt32(dataGridView.SelectedRows[0].Cells["Id"].Value);
                 if (ID != 0)
                 {
-                    conn.Open();
-                    cmd = new SqlCommand("DELETE FROM Kasutajad WHERE Id=@id", conn);
+                    AppContext.conn.Open();
+                    cmd = new SqlCommand("DELETE FROM Kasutajad WHERE Id=@id", AppContext.conn);
                     cmd.Parameters.AddWithValue("@id", ID);
                     cmd.ExecuteNonQuery();
-                    conn.Close();
+                    AppContext.conn.Close();
 
                     Emaldamine();
                     NaitaAndmed();

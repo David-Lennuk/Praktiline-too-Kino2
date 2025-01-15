@@ -14,11 +14,7 @@ namespace Praktiline_too_Kino
 {
     public partial class LauasaalForm : Form
     {
-        //SqlConnection conn = new SqlConnection($@"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=C:\Users\opilane\source\repos\KinoAB\KinoAB\Kino.mdf;Integrated Security=True");
-
-        static string projectRoot = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"..\..\"));
-        static string db_path = Path.Combine(projectRoot, "Kino.mdf");
-        SqlConnection conn = new SqlConnection($@"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename={db_path};Integrated Security=True");
+        //SqlConnection AppContext.conn = new SqlConnection($@"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=C:\Users\opilane\source\repos\KinoAB\KinoAB\Kino.mdf;Integrated Security=True");
 
         SqlCommand cmd;
         SqlDataAdapter adapter;
@@ -145,13 +141,13 @@ namespace Praktiline_too_Kino
         // Показать данные из таблицы Saal
         public void NaitaAndmed()
         {
-            conn.Open();
+            AppContext.conn.Open();
             DataTable dt = new DataTable();
-            cmd = new SqlCommand("SELECT * FROM Saal", conn);
+            cmd = new SqlCommand("SELECT * FROM Saal", AppContext.conn);
             adapter = new SqlDataAdapter(cmd);
             adapter.Fill(dt);
             dataGridView.DataSource = dt;
-            conn.Close();
+            AppContext.conn.Close();
         }
 
         // Добавить запись в таблицу Saal
@@ -161,16 +157,16 @@ namespace Praktiline_too_Kino
             {
                 try
                 {
-                    conn.Open();
+                    AppContext.conn.Open();
 
-                    cmd = new SqlCommand("INSERT INTO Saal (Saal_nimetus, Kirjeldus, Rida, Kohad_reas) VALUES (@saal_nimetus, @kirjeldus, @rida, @kohad_reas)", conn);
+                    cmd = new SqlCommand("INSERT INTO Saal (Saal_nimetus, Kirjeldus, Rida, Kohad_reas) VALUES (@saal_nimetus, @kirjeldus, @rida, @kohad_reas)", AppContext.conn);
                     cmd.Parameters.AddWithValue("@saal_nimetus", saal_nimetus_txt.Text);
                     cmd.Parameters.AddWithValue("@kirjeldus", kirjeldus_txt.Text);
                     cmd.Parameters.AddWithValue("@rida", rida_txt.Text);
                     cmd.Parameters.AddWithValue("@kohad_reas", kohad_reas_txt.Text);
 
                     cmd.ExecuteNonQuery();
-                    conn.Close();
+                    AppContext.conn.Close();
 
                     NaitaAndmed();
                     Emaldamine();
@@ -192,8 +188,8 @@ namespace Praktiline_too_Kino
         {
             try
             {
-                conn.Open();
-                cmd = new SqlCommand("UPDATE Saal SET Saal_nimetus=@saal_nimetus, Kirjeldus=@kirjeldus, Rida=@rida, Kohad_reas=@kohad_reas WHERE Id=@id", conn);
+                AppContext.conn.Open();
+                cmd = new SqlCommand("UPDATE Saal SET Saal_nimetus=@saal_nimetus, Kirjeldus=@kirjeldus, Rida=@rida, Kohad_reas=@kohad_reas WHERE Id=@id", AppContext.conn);
                 cmd.Parameters.AddWithValue("@id", ID);
                 cmd.Parameters.AddWithValue("@saal_nimetus", saal_nimetus_txt.Text);
                 cmd.Parameters.AddWithValue("@kirjeldus", kirjeldus_txt.Text);
@@ -201,7 +197,7 @@ namespace Praktiline_too_Kino
                 cmd.Parameters.AddWithValue("@kohad_reas", kohad_reas_txt.Text);
 
                 cmd.ExecuteNonQuery();
-                conn.Close();
+                AppContext.conn.Close();
 
                 NaitaAndmed();
                 Emaldamine();
@@ -221,11 +217,11 @@ namespace Praktiline_too_Kino
                 ID = Convert.ToInt32(dataGridView.SelectedRows[0].Cells["Id"].Value);
                 if (ID != 0)
                 {
-                    conn.Open();
-                    cmd = new SqlCommand("DELETE FROM Saal WHERE Id=@id", conn);
+                    AppContext.conn.Open();
+                    cmd = new SqlCommand("DELETE FROM Saal WHERE Id=@id", AppContext.conn);
                     cmd.Parameters.AddWithValue("@id", ID);
                     cmd.ExecuteNonQuery();
-                    conn.Close();
+                    AppContext.conn.Close();
 
                     Emaldamine();
                     NaitaAndmed();

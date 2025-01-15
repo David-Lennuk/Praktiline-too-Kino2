@@ -14,9 +14,6 @@ namespace Praktiline_too_Kino
 {
     public partial class KinolaudForm : Form
     {
-        static string projectRoot = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"..\..\"));
-        static string db_path = Path.Combine(projectRoot, "Kino.mdf");
-        SqlConnection conn = new SqlConnection($@"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename={db_path};Integrated Security=True");
 
         SqlCommand cmd;
         SqlDataAdapter adapter;
@@ -143,19 +140,19 @@ namespace Praktiline_too_Kino
 
         public void NaitaAndmed()
         {
-            conn.Open();
+            AppContext.conn.Open();
             DataTable dt = new DataTable();
-            cmd = new SqlCommand("SELECT * FROM Kinolaud", conn);
+            cmd = new SqlCommand("SELECT * FROM Kinolaud", AppContext.conn);
             adapter = new SqlDataAdapter(cmd);
             adapter.Fill(dt);
             dataGridView.DataSource = dt;
-            conn.Close();
+            AppContext.conn.Close();
         }
 
         private void NaitaSaal()
         {
-            conn.Open();
-            cmd = new SqlCommand("SELECT Id, Saal_nimetus FROM Saal", conn);
+            AppContext.conn.Open();
+            cmd = new SqlCommand("SELECT Id, Saal_nimetus FROM Saal", AppContext.conn);
             adapter = new SqlDataAdapter(cmd);
             saaltable = new DataTable();
             adapter.Fill(saaltable);
@@ -163,7 +160,7 @@ namespace Praktiline_too_Kino
             {
                 saal_cb.Items.Add(item["Saal_nimetus"]);
             }
-            conn.Close();
+            AppContext.conn.Close();
         }
 
         // Удаление записи и изображения
@@ -174,11 +171,11 @@ namespace Praktiline_too_Kino
                 ID = Convert.ToInt32(dataGridView.SelectedRows[0].Cells["Id"].Value);
                 if (ID != 0)
                 {
-                    conn.Open();
-                    cmd = new SqlCommand("DELETE FROM Kinolaud  WHERE Id=@id", conn);
+                    AppContext.conn.Open();
+                    cmd = new SqlCommand("DELETE FROM Kinolaud  WHERE Id=@id", AppContext.conn);
                     cmd.Parameters.AddWithValue("@id", ID);
                     cmd.ExecuteNonQuery();
-                    conn.Close();
+                    AppContext.conn.Close();
 
                     // Удаляем файл
                     Kustuta_fail(dataGridView.SelectedRows[0].Cells["Poster"].Value.ToString());
@@ -245,8 +242,8 @@ namespace Praktiline_too_Kino
 
 
                 // Обновляем запись в базе данных
-                conn.Open();
-                cmd = new SqlCommand("UPDATE Kinolaud SET Filmi_nimetus=@filmi_nimetus, Aasta=@aasta, Poster=@poster, Saal_Id=@saalId WHERE Id=@id", conn);
+                AppContext.conn.Open();
+                cmd = new SqlCommand("UPDATE Kinolaud SET Filmi_nimetus=@filmi_nimetus, Aasta=@aasta, Poster=@poster, Saal_Id=@saalId WHERE Id=@id", AppContext.conn);
                 cmd.Parameters.AddWithValue("@id", ID);
                 cmd.Parameters.AddWithValue("@filmi_nimetus", filmi_nimetus_txt.Text);
                 cmd.Parameters.AddWithValue("@aasta", aasta_txt.Text);
@@ -255,7 +252,7 @@ namespace Praktiline_too_Kino
 
                 cmd.ExecuteNonQuery();
 
-                conn.Close();
+                AppContext.conn.Close();
                 NaitaAndmed();
                 Emaldamine();
                 MessageBox.Show("Andmed on edukalt uuendatud", "Uuendamine");
@@ -275,15 +272,15 @@ namespace Praktiline_too_Kino
             {
                 try
                 {
-                    conn.Open();
+                    AppContext.conn.Open();
 
-                    cmd = new SqlCommand("SELECT Id FROM Saal WHERE Saal_nimetus=@saal", conn);
+                    cmd = new SqlCommand("SELECT Id FROM Saal WHERE Saal_nimetus=@saal", AppContext.conn);
                     cmd.Parameters.AddWithValue("@saal", saal_cb.Text);
                     cmd.ExecuteNonQuery();
                     ID = Convert.ToInt32(cmd.ExecuteScalar());
 
                     // Вставляем новые данные в базу данных
-                    cmd = new SqlCommand("INSERT INTO Kinolaud (Filmi_nimetus, Aasta, Poster, Saal_Id) VALUES (@filmi_nimetus, @aasta, @poster, @saal)", conn);
+                    cmd = new SqlCommand("INSERT INTO Kinolaud (Filmi_nimetus, Aasta, Poster, Saal_Id) VALUES (@filmi_nimetus, @aasta, @poster, @saal)", AppContext.conn);
                     cmd.Parameters.AddWithValue("@filmi_nimetus", filmi_nimetus_txt.Text);
                     cmd.Parameters.AddWithValue("@aasta", aasta_txt.Text);
                     cmd.Parameters.AddWithValue("@poster", filmi_nimetus_txt.Text + extension);
@@ -291,7 +288,7 @@ namespace Praktiline_too_Kino
 
                     cmd.ExecuteNonQuery();
 
-                    conn.Close();
+                    AppContext.conn.Close();
                     Emaldamine();
                     NaitaAndmed();
                 }

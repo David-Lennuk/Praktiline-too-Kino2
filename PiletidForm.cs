@@ -14,11 +14,7 @@ namespace Praktiline_too_Kino
 {
     public partial class PiletidForm : Form
     {
-        //SqlConnection conn = new SqlConnection($@"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=C:\Users\opilane\source\repos\KinoAB\KinoAB\Kino.mdf;Integrated Security=True");
-
-        static string projectRoot = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"..\..\"));
-        static string db_path = Path.Combine(projectRoot, "Kino.mdf");
-        SqlConnection conn = new SqlConnection($@"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename={db_path};Integrated Security=True");
+        //SqlConnection AppContext.conn = new SqlConnection($@"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=C:\Users\opilane\source\repos\KinoAB\KinoAB\Kino.mdf;Integrated Security=True");
 
         SqlCommand cmd;
         SqlDataAdapter adapter;
@@ -128,19 +124,19 @@ namespace Praktiline_too_Kino
 
         private void NaitaAndmed()
         {
-            conn.Open();
+            AppContext.conn.Open();
             DataTable dt = new DataTable();
-            cmd = new SqlCommand("SELECT * FROM Piletid", conn);
+            cmd = new SqlCommand("SELECT * FROM Piletid", AppContext.conn);
             adapter = new SqlDataAdapter(cmd);
             adapter.Fill(dt);
             dataGridView.DataSource = dt;
-            conn.Close();
+            AppContext.conn.Close();
         }
 
         private void NaitaKasutajad()
         {
-            conn.Open();
-            cmd = new SqlCommand("SELECT Id, Nimi FROM Kasutajad", conn);
+            AppContext.conn.Open();
+            cmd = new SqlCommand("SELECT Id, Nimi FROM Kasutajad", AppContext.conn);
             adapter = new SqlDataAdapter(cmd);
             kasutajadTable = new DataTable();
             adapter.Fill(kasutajadTable);
@@ -148,13 +144,13 @@ namespace Praktiline_too_Kino
             {
                 kasutajad_cb.Items.Add(item["Nimi"]);
             }
-            conn.Close();
+            AppContext.conn.Close();
         }
 
         private void NaitaSeansid()
         {
-            conn.Open();
-            cmd = new SqlCommand("SELECT Id, Start_time FROM Seansid", conn);
+            AppContext.conn.Open();
+            cmd = new SqlCommand("SELECT Id, Start_time FROM Seansid", AppContext.conn);
             adapter = new SqlDataAdapter(cmd);
             seansidTable = new DataTable();
             adapter.Fill(seansidTable);
@@ -162,13 +158,13 @@ namespace Praktiline_too_Kino
             {
                 seansid_cb.Items.Add(item["Start_time"]);
             }
-            conn.Close();
+            AppContext.conn.Close();
         }
 
         private void NaitaKohad()
         {
-            conn.Open();
-            cmd = new SqlCommand("SELECT Id, Broneeringu_staatus FROM Kohad", conn);
+            AppContext.conn.Open();
+            cmd = new SqlCommand("SELECT Id, Broneeringu_staatus FROM Kohad", AppContext.conn);
             adapter = new SqlDataAdapter(cmd);
             kohadTable = new DataTable();
             adapter.Fill(kohadTable);
@@ -176,21 +172,21 @@ namespace Praktiline_too_Kino
             {
                 kohad_cb.Items.Add(item["Broneeringu_staatus"]);
             }
-            conn.Close();
+            AppContext.conn.Close();
         }
 
         private void Lisa_btn_Click(object sender, EventArgs e)
         {
             try
             {
-                conn.Open();
-                cmd = new SqlCommand("INSERT INTO Piletid (Kasutajad_Id, Seansid_Id, Kohad_Id, Ostuaeg) VALUES (@kasutajad, @seansid, @kohad, @ostuaeg)", conn);
+                AppContext.conn.Open();
+                cmd = new SqlCommand("INSERT INTO Piletid (Kasutajad_Id, Seansid_Id, Kohad_Id, Ostuaeg) VALUES (@kasutajad, @seansid, @kohad, @ostuaeg)", AppContext.conn);
                 cmd.Parameters.AddWithValue("@kasutajad", kasutajadTable.Rows[kasutajad_cb.SelectedIndex]["Id"]);
                 cmd.Parameters.AddWithValue("@seansid", seansidTable.Rows[seansid_cb.SelectedIndex]["Id"]);
                 cmd.Parameters.AddWithValue("@kohad", kohadTable.Rows[kohad_cb.SelectedIndex]["Id"]);
                 cmd.Parameters.AddWithValue("@ostuaeg", DateTime.Now);
                 cmd.ExecuteNonQuery();
-                conn.Close();
+                AppContext.conn.Close();
                 NaitaAndmed();
                 MessageBox.Show("Andmed lisatud edukalt!");
             }
@@ -204,14 +200,14 @@ namespace Praktiline_too_Kino
         {
             try
             {
-                conn.Open();
-                cmd = new SqlCommand("UPDATE Piletid SET Kasutajad_Id=@kasutajad, Seansid_Id=@seansid, Kohad_Id=@kohad WHERE Id=@id", conn);
+                AppContext.conn.Open();
+                cmd = new SqlCommand("UPDATE Piletid SET Kasutajad_Id=@kasutajad, Seansid_Id=@seansid, Kohad_Id=@kohad WHERE Id=@id", AppContext.conn);
                 cmd.Parameters.AddWithValue("@id", ID);
                 cmd.Parameters.AddWithValue("@kasutajad", kasutajadTable.Rows[kasutajad_cb.SelectedIndex]["Id"]);
                 cmd.Parameters.AddWithValue("@seansid", seansidTable.Rows[seansid_cb.SelectedIndex]["Id"]);
                 cmd.Parameters.AddWithValue("@kohad", kohadTable.Rows[kohad_cb.SelectedIndex]["Id"]);
                 cmd.ExecuteNonQuery();
-                conn.Close();
+                AppContext.conn.Close();
                 NaitaAndmed();
                 MessageBox.Show("Andmed uuendatud edukalt!");
             }
@@ -225,11 +221,11 @@ namespace Praktiline_too_Kino
         {
             try
             {
-                conn.Open();
-                cmd = new SqlCommand("DELETE FROM Piletid WHERE Id=@id", conn);
+                AppContext.conn.Open();
+                cmd = new SqlCommand("DELETE FROM Piletid WHERE Id=@id", AppContext.conn);
                 cmd.Parameters.AddWithValue("@id", ID);
                 cmd.ExecuteNonQuery();
-                conn.Close();
+                AppContext.conn.Close();
                 NaitaAndmed();
                 MessageBox.Show("Andmed kustutatud edukalt!");
             }
